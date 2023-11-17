@@ -1,6 +1,7 @@
 const eventsApiUrl = "https://fsa-crud-2aa9294fe819.herokuapp.com/api/2308-acc-et-web-pt-b/events";
 const eventList = document.getElementById("eventList");
 const dButton = document.createElement("button");
+const addForm = document.getElementById("addEventForm");
 
 const state = {
     events: []
@@ -45,7 +46,31 @@ async function renderEvents() {
 }
 
 
+addForm.addEventListener("submit", async (e)=> {
+    e.preventDefault();
+    console.log(e);
+    const name = e.target[0].value;
+    const description = e.target[1].value;
+    const date = e.target[2].value;
+    const location = e.target[3].value;
+    const cohort = e.target[4].value;
+    console.log(name, description, date, location, cohort)
 
+  const postMethod = await fetch("https://fsa-crud-2aa9294fe819.herokuapp.com/api/2308-acc-et-web-pt-b/events", {
+  method: 'POST',
+  body: JSON.stringify({
+    name: name,
+    description: description,
+    date: date,
+    location: location,
+    cohortId: cohort 
+  }),
+  });
+
+  const result = await postMethod.json();
+  console.log(result); 
+
+});
 
 
 
