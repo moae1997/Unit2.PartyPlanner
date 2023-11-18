@@ -37,45 +37,47 @@ async function renderEvents() {
         eventCohort.innerHTML = event["cohortId"];
         let indentedList = document.createElement("ul");
         eventName.setAttribute("class", "borderStyle");
+        eventName.setAttribute("id", event["id"]);
         let dButton = document.createElement("button");
         dButton.innerHTML = "Take event down";
-        dButton.addEventListener("click", async ()=> {
-            deleteEvent(event.id);
+        dButton.addEventListener("click", async (e)=> {
+            await deleteEvent(event.id);
+            await e.target.parentNode.parentNode.removeChild(e.target.parentNode);
         });
         indentedList.appendChild(eventdesc);
         indentedList.appendChild(eventDate);
         indentedList.appendChild(eventlocation);
         indentedList.appendChild(eventCohort);
         eventName.appendChild(indentedList);
-        eventList.appendChild(eventName);
         eventName.appendChild(dButton);
+        eventList.appendChild(eventName);
+        
+    });
+    addForm.addEventListener("click", async (e)=> {
+        e.preventDefault();
+        const specificDate = new Date(e.target.form[2].value); 
+        const iso8601Date = specificDate.toISOString();
+        fetch("https://fsa-crud-2aa9294fe819.herokuapp.com/api/2308-acc-et-web-pt-b/events", {
+    
+        method: "POST",
+        body: JSON.stringify({
+            name: e.target.form[0].value,
+            description: e.target.form[1].value,
+            date: iso8601Date,
+            location: e.target.form[3].value,
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+    .then(response => response.json())
+    .then(
+    );
     });
 }
 
 
-addForm.addEventListener("click", async (e)=> {
-    e.preventDefault();
-    const specificDate = new Date(e.target.form[2].value); 
-    const iso8601Date = specificDate.toISOString();
-    fetch("https://fsa-crud-2aa9294fe819.herokuapp.com/api/2308-acc-et-web-pt-b/events", {
 
-    method: "POST",
-    body: JSON.stringify({
-        name: e.target.form[0].value,
-        description: e.target.form[1].value,
-        date: iso8601Date,
-        location: e.target.form[3].value,
-        cohortId: e.target.form[4].value
-    }),
-    headers: {
-        "Content-type": "application/json; charset=UTF-8"
-    }
-})
-.then(response => response.json())
-.then(json => console.log(json));
-window.location.hash = render();
-console.log(window.location.hash);
-});
 
 async function  deleteEvent(id) {
     try{
