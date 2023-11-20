@@ -47,7 +47,9 @@ async function renderEvents() {
         dButton.innerHTML = "Take event down";
         dButton.addEventListener("click", async (e)=> {
             await deleteEvent(event.id);
-            await e.target.parentNode.parentNode.removeChild(e.target.parentNode);
+            const eventId = event.id;
+            state["events"] = state["events"].filter(event => event.id !== eventId);
+            renderEvents();
         });
         indentedList.appendChild(eventdesc);
         indentedList.appendChild(eventDate);
