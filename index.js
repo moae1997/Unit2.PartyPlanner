@@ -6,6 +6,10 @@ const state = {
     events: []
 };
 
+window.onload = (event) => {
+    render();
+  };
+
 async function render() {
     await getEvents();
     renderEvents();
@@ -24,6 +28,7 @@ async function getEvents() {
 }
 
 async function renderEvents() {
+    eventList.innerHTML = "";
     state["events"].map(event=>{
         let eventName = document.createElement("li");
         eventName.innerHTML = event["name"];
@@ -53,12 +58,14 @@ async function renderEvents() {
         eventList.appendChild(eventName);
         
     });
-    addForm.addEventListener("click", async (e)=> {
-        e.preventDefault();
-        const specificDate = new Date(e.target.form[2].value); 
-        const iso8601Date = specificDate.toISOString();
-        fetch("https://fsa-crud-2aa9294fe819.herokuapp.com/api/2308-acc-et-web-pt-b/events", {
     
+}
+
+addForm.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const specificDate = new Date(e.target.form[2].value);
+    const iso8601Date = specificDate.toISOString();
+    const response = await fetch(eventsApiUrl, {
         method: "POST",
         body: JSON.stringify({
             name: e.target.form[0].value,
@@ -67,17 +74,19 @@ async function renderEvents() {
             location: e.target.form[3].value,
         }),
         headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    .then(response => response.json())
-    .then(
-    );
+            "Content-type": "application/json; charset=UTF-8",
+        },
     });
-}
 
+    const newEvent = await response.json();
+    state["events"].push(newEvent.data); 
+     await renderEvents(); 
 
-
+    e.target.form[0].value = "";
+    e.target.form[1].value = "";
+    e.target.form[2].value = "";
+    e.target.form[3].value = "";
+});
 
 async function  deleteEvent(id) {
     try{
@@ -86,7 +95,5 @@ async function  deleteEvent(id) {
         console.log(error)
     }
 }
-
-render();
 
 
